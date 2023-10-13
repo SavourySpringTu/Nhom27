@@ -15,7 +15,6 @@ function App() {
         <Route path='/Error' errorElement={<ErrorPage />} /> 
       </Routes>
     </div>
-    
   );
 }
 
