@@ -17,6 +17,23 @@ async function getCvApply(post){
         return false;
     }
 }
+async function applyCV(cv){
+    try{
+        let pool = await sql.connect(config);
+        let qr =  await pool.request()
+        .input('link',sql.NChar,cv.Link)
+        .input('checked',sql.Bit,cv.Checked)
+        .input('post',sql.Int,cv.Id_Post)
+        .input('candidate',sql.Int,cv.Id_Candidate)
+        .query('INSERT INTO Appication(Link,Checked,Id_Post,Id_Candidate) VALUES(@link,@checked,@post,@candidate)');
+        return qr.recordset;
+    }
+    catch(error)
+    {
+        return false;
+    }
+}
 module.exports = {
-    getCvApply:getCvApply
+    getCvApply:getCvApply,
+    applyCV:applyCV
 }
