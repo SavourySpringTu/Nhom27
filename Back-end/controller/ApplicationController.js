@@ -18,5 +18,11 @@ class ApplicationController{
             res.status(200).send({result})
         });
     }
+    sendMailForgetPassword(req,res){
+        let mail = req.params.mail;
+        qr.sendMailForgetPassword(mail).then(result=>{
+            res.status(200).send({result})
+        });
+    }
 }
 module.exports= new ApplicationController;

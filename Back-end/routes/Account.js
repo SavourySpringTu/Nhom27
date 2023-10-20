@@ -1,7 +1,7 @@
 const express = require('express');
-const PostController = require('../controller/PostController');
+const AccountController = require('../controller/AccountController');
 const route = express.Router();
 
-route.get('/search/:Job',PostController.searchPostbyJob);
+route.post('/createaccount',AccountController.createAccount);
 
 module.exports = route;

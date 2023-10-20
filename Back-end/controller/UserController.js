@@ -10,5 +10,11 @@ class UserController{
             res.status(200).send({result})
         });
     }
+    createUser(req,res){
+        let user = req.body
+        qr.createUser(user).then(result=>{
+            res.status(200).send({result})
+        });
+    }
 }
 module.exports= new UserController;
