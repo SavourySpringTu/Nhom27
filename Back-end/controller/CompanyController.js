@@ -8,5 +8,11 @@ class CompanyController{
             res.status(200).send({result})
         });
     }
+    updateCompany(req,res){
+        let cp = req.body;
+        qr.updateCompany(cp).then(result=>{
+            res.status(200).send({result})
+        });
+    }
 }
 module.exports= new CompanyController;
