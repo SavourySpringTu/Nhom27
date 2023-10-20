@@ -4,6 +4,8 @@ import MainPage from './components/main/MainPage';
 import ErrorPage from './components/other/ErrorPage';
 import Register from './components/sign/Register';
 import Login from './components/sign/Login';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
@@ -14,6 +16,7 @@ function App() {
         <Route path='/Register' element={<Register />} />
         <Route path='/Error' errorElement={<ErrorPage />} /> 
       </Routes>
+      <ToastContainer />
     </div>
   );
 }

@@ -1,59 +1,144 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useCookies } from "react-cookie";
+import { useNavigate } from "react-router-dom";
 
 const Self = () => {
     const [ten, setTen] = useState(null);
-    const [diachi, setDiaChi] = useState(null);
-    const [lienlac, setLienLac] = useState(null);
-    const [hocvan, setHocVan] = useState(null);
-    const [tuoi, setTuoi] = useState(null);
-    const [gioithieu, setGioiThieu] = useState(null);
-    const [congviec, setCongViec] = useState(null);
-    const [tieusu, setTieuSu] = useState(null);
+    const [address, setAddress] = useState(null);
+    const [email, setEmail] = useState(null);
+    const [description, setDescription] = useState(null);
+    const [level, setLevel] = useState(null);
+    const [bio, setBio] = useState(null);
+    const [age, setAge] = useState(null);
+    const [gender, setGender] = useState(null);
+    const [selectedFile, setSelectedFile] = useState();
+    const [cookies, setCookie, removeCookie] = useCookies(["user"]);
+    const [data,setData] = useState('');
+    const navigate = useNavigate();
+    const handleSubmission = () => {
+		const formData = new FormData();
+		formData.append('File', selectedFile);
+        console.log(formData)
+		fetch(
+			`http://localhost:3001/jobfinder/upload/${cookies.user}`,
+			{
+				method: 'POST',
+                headers: {
+                    // 'Content-Type': 'application/json',
+                    // 'Content-Type': 'multipart/form-data',
+                    'Accept': 'application/json'
+                    },
+				body: formData,
+			}
+		)
+			.then((response) => response.json())
+			.then((result) => {
+				console.log('Success:', result.filePath);
+                document.getElementById('avatar').src = process.env.PUBLIC_URL+result.filePath
+			})
+			.catch((error) => {
+				console.error('Error:', error);
+			});
+	};
+    useEffect(()=> {
+        fetch(`http://localhost:3001/jobfinder/accountdetail/${cookies.user}`)
+        .then(res =>res.json())
+        .then(data => {
+            setData(data[1][0])
+            setAddress(data[1][0].Address)
+            setEmail(data[1][0].Email)
+            setDescription(data[1][0].Description)
+            setLevel(data[1][0].Level)
+            setBio(data[1][0].Bio)
+            setAge(data[1][0].Age)
+            setGender(data[1][0].Gender)
+            if(data[1][0].Gender != null)
+            if(data[1][0].Gender == true)
+            document.getElementById('male').checked=true;
+            else document.getElementById('female').checked=true;
+        })
+        
+    },[]) 
+    const onSubmit = async (e) => {
+        e.preventDefault();
+        var dataa = {Username: ten,Address: address,Email: email, Description:description, Level: level,Bio:bio,Age:age,Gender:gender}
+        let result = await fetch(
+            `http://localhost:3001/jobfinder/saveinfo/${cookies.user}`,
+            {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+                },
+              body: JSON.stringify(dataa),
+            },
+        ).then(res =>res.json())
+        .then(data => {
+            if(data.result){
+                alert('Lưu thông tin tài khoản thành công')
+                navigate("/User");
+            }
+            else {alert('Lưu thất bại');
+            }})
+    }
     return(
         <div style={{position:"relative", display: "grid", justifyContent: "normal"}}>
-            <form action="" style={{background:"gray",position:"relative",margin:"5%", fontSize:"30px"}}>
+            <div style={{background:"#C4BEBE",position:"relative", margin:"5%", fontSize:"30px",borderRadius:"10px"}}>
             <div style={{display:"flex", justifyContent:"flex-start"}}>
-                <div style={{padding:"30px",width:"180px"}}>ảnh</div>
+                
+                <div style={{padding:"30px",width:"180px"}}>
+                    <div style={{width:"80px",height:"80px"}}><img style={{borderRadius:"100%"}} id="avatar" className="icon-fit"src={process.env.PUBLIC_URL+"/company.jpeg"} alt="" /></div>
+                    <label For="fileinput">+</label><br />
+                    <input style={{display:"none"}} id="fileinput" type="file" name="file" onChange={(e)=>{setSelectedFile(e.target.files[0])}}/>
+                    <button onClick={handleSubmission}>Lưu ảnh</button>
+                </div>
+                <form action="/" onSubmit={onSubmit}>
                 <div>
                     <table>
                         <tr>
                             <th>Tên</th>
-                            <th>{ten}</th>
+                            <th style={{paddingLeft:"80px"}}>{data.Name}</th>
                         </tr>
                         <tr>
                             <td><div>Địa chỉ</div></td>
-                            <td><div><input type="text" value={diachi} onChange={(e) =>setDiaChi(e.target.value)}/></div></td>
+                            <td><div><input type="text" value={address} onChange={(e) =>setAddress(e.target.value)}/></div></td>
                         </tr>
                         <tr>
-                            <td><div>Liên lạc</div></td>
-                            <td><div><input type="number" value={lienlac} onChange={(e) =>setLienLac(e.target.value)}/></div></td>
+                            <td><div>Email</div></td>
+                            <td><div><input type="text" value={email} onChange={(e) =>setEmail(e.target.value)}/></div></td>
                         </tr>
                         <tr>
-                            <td><div>Học vấn</div></td>
-                            <td><div><input type="text" value={hocvan} onChange={(e) =>setHocVan(e.target.value)}/></div></td>
+                            <td><div>Mô tả bản thân</div></td>
+                            <td><div><input type="text" value={description} onChange={(e) =>setDescription(e.target.value)}/></div></td>
                         </tr>
                         <tr>
-                            <td><div>Tuổi</div></td>
-                            <td><div><input type="number" value={tuoi} onChange={(e) =>setTuoi(e.target.value)}/></div></td>
-                        </tr>
-                        <tr>
-                            <td><div>Giới thiệu</div></td>
-                            <td><div><input type="text" value={gioithieu} onChange={(e) =>setGioiThieu(e.target.value)}/></div></td>
-                        </tr>
-                        <tr>
-                            <td><div>Công việc</div></td>
-                            <td><div><input type="text" value={congviec} onChange={(e) =>setCongViec(e.target.value)}/></div></td>
+                            <td><div>Trình độ học vấn</div></td>
+                            <td><div><input type="text" value={level} onChange={(e) =>setLevel(e.target.value)}/></div></td>
                         </tr>
                         <tr>
                             <td><div>Tiểu sử</div></td>
-                            <td><div><input type="text" value={tieusu} onChange={(e) =>setTieuSu(e.target.value)}/></div></td>
+                            <td><div><input type="text" value={bio} onChange={(e) =>setBio(e.target.value)}/></div></td>
+                        </tr>
+                        <tr>
+                            <td><div>Tuổi</div></td>
+                            <td><div><input type="number" value={age} onChange={(e) =>setAge(e.target.value)}/></div></td>
+                        </tr>
+                        <tr>
+                            <td><div>Giới tính</div></td>
+                            <td><div style={{marginBottom:"10px"}} onChange={(e) =>setGender(e.target.value)}>
+                                <input className="optionbtn" type="radio" value="flase" name="gender" id="male" /> Nam
+                                <input className="optionbtn" type="radio" value="true" name="gender" id="female"/> Nữ
+                            </div></td>
                         </tr>
                     </table>
             
                 </div>
+                <div style={{display:"flex", justifyContent:"flex-end", margin:"10px"}}><button type="submit">Lưu</button></div>
+                </form>
+                </div>
             </div>
-            <div style={{display:"flex", justifyContent:"flex-end", margin:"10px"}}><button>Lưu</button></div>
-            </form>
+            
+            
         </div>
     )
 }

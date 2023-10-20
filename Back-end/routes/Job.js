@@ -1,5 +1,5 @@
 const express = require('express');
-const JobController = require('../controller/JobController');
+const JobController = require('../controllers/JobController');
 const route = express.Router();
 
 route.get('/listjob',JobController.listJob);

@@ -1,9 +1,7 @@
 const express = require('express');
-const ApplicationController = require('../controller/ApplicationController');
+const ApplicationController = require('../controllers/AplicationController');
 const route = express.Router();
 
-route.get('/cvinpost/:Post',ApplicationController.getCvApply);
-route.get('/sendemailforgetpassword/:mail',ApplicationController.sendMailForgetPassword);
-route.post('/applycv',ApplicationController.getCvApply);
+route.get('/cvapply/:Post',ApplicationController.getCvApply);
 
 module.exports = route;

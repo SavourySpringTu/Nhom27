@@ -16,7 +16,7 @@ const MainPage = () => {
                 <Route path='/Candidate' element={<CandidateDetail />} />
                 <Route path='/Company' element={<CompanyDetail />} />
                 <Route path='/User' element={<Self />} />
-                <Route path='/RecuitDetail' element={<Recuitment />} />
+                <Route path='/RecuitDetail/:Id' element={<Recuitment />} />
             </Routes>
         </div>
     );

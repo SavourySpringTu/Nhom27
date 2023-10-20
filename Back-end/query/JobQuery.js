@@ -1,4 +1,4 @@
-const config = require('../connectSQL');
+const config = require('../dbconfig');
 const sql = require('mssql');
 
 async function getListJob(){
