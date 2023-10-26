@@ -9,6 +9,7 @@ const Login = () => {
     const [taikhoan, setTaiKhoan] = useState('');
     const [matkhau, setMatKhau] = useState('');
     const [cookies, setCookie, removeCookie] = useCookies(["user"]);
+    const [role, setRole] = useCookies(["role"]);
     const navigate = useNavigate();
     useEffect(()=> {
         // fetch("http://localhost:3001/test/userapi")
@@ -49,6 +50,7 @@ const Login = () => {
                 });
                 setCookie("user", data.result[1], { path: "/" });
                 console.log(data.result[2])
+                setRole("role",data.result[2])
                 if(data.result[2]==1)
                 navigate("/admin");
                 else

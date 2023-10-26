@@ -14,6 +14,7 @@ const Self = () => {
     const [selectedFile, setSelectedFile] = useState();
     const [cookies, setCookie, removeCookie] = useCookies(["user"]);
     const [data,setData] = useState('');
+    const [appli,setAppli] = useState([]);
     const navigate = useNavigate();
     const handleSubmission = () => {
 		const formData = new FormData();
@@ -40,6 +41,7 @@ const Self = () => {
 				console.error('Error:', error);
 			});
 	};
+    
     useEffect(()=> {
         fetch(`http://localhost:3001/jobfinder/accountdetail/${cookies.user}`)
         .then(res =>res.json())
@@ -56,6 +58,15 @@ const Self = () => {
             if(data[1][0].Gender == true)
             document.getElementById('male').checked=true;
             else document.getElementById('female').checked=true;
+        })
+        fetch(`http://localhost:3001/jobfinder/getAllMyAppli/${cookies.user}`)
+        .then(res =>res.json())
+        .then(data => {
+            console.log("haha")
+            console.log(data)
+            if(data){
+            setAppli(data);
+            }
         })
         
     },[]) 
@@ -87,9 +98,9 @@ const Self = () => {
             <div style={{display:"flex", justifyContent:"flex-start"}}>
                 
                 <div style={{padding:"30px",width:"180px"}}>
-                    <div style={{width:"80px",height:"80px"}}><img style={{borderRadius:"100%"}} id="avatar" className="icon-fit"src={process.env.PUBLIC_URL+"/company.jpeg"} alt="" /></div>
+                    <div style={{width:"80px",height:"80px"}}><img style={{borderRadius:"100%"}} id="avatar" className="icon-fit"src={data.Image?process.env.PUBLIC_URL+data.Image:process.env.PUBLIC_URL+"/company.jpeg"} alt="" /></div>
                     <label For="fileinput">+</label><br />
-                    <input style={{display:"none"}} id="fileinput" type="file" name="file" onChange={(e)=>{setSelectedFile(e.target.files[0])}}/>
+                    <input style={{display:"none"}} id="fileinput" type="file" name="file" accept="image/*" onChange={(e)=>{setSelectedFile(e.target.files[0])}}/>
                     <button onClick={handleSubmission}>Lưu ảnh</button>
                 </div>
                 <form action="/" onSubmit={onSubmit}>
@@ -135,6 +146,26 @@ const Self = () => {
                 </div>
                 <div style={{display:"flex", justifyContent:"flex-end", margin:"10px"}}><button type="submit">Lưu</button></div>
                 </form>
+                </div>
+                <div style={{background:"gainsboro",marginTop:"20px",borderRadius:"0px 0px 10px 10px;",padding:"10px"}}>
+                <div style={{justifyContent: "space-between",display: "flex",margin: "0px 110px"}}>
+                    <h2> Danh sách các bài tuyển dụng đã nộp </h2>
+                </div>
+                {appli.map(post => (
+                    <div className="listjob" key={post.Id}>
+                        <div>
+                            <div style={{display:"flex"}}>Công việc: {post.Job}</div>
+                            <br />
+                            <div style={{display:"flex"}}>Lương: {post.Salary}tr</div>
+                            <br />
+                            <div style={{display:"flex"}}>Địa chỉ: {post.Address}</div>
+                        </div>
+                        <div>
+                            <div>{post.Checked==0?'Chưa xem qua':'Đã được xem qua'}</div>
+                        </div>
+                        
+                    </div>
+                ))} 
                 </div>
             </div>
             

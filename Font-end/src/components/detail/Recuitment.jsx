@@ -1,18 +1,51 @@
 import { useEffect, useState } from "react"
+import { useCookies } from "react-cookie";
 import { Link, useLocation, useParams } from "react-router-dom"
 
 const Recuitment = () => {
     const {Id} = useParams();
     const [luong, setLuong] = useState(null);
     const [company, setCompany] = useState(null);
+    const [companyId, setCompanyId] = useState(null);
+    const [companyContact, setContact] = useState(null);
     const [job, setJob] = useState(null);
-    const [salary, setSalary] = useState(null);
     const [require, setRequire] = useState(null);
     const [benefits, setBenefits] = useState(null);
     const [address, setAddress] = useState(null);
     const [number, setNumber] = useState(null);
     const [exp, setExp] = useState(null);
+    const [image, setImage] = useState(null);
     const [dateterm, setDateTerm] = useState(null);
+    const [selectedFile, setSelectedFile] = useState();
+    const [cookies, setCookie, removeCookie] = useCookies(["user"]);
+    const handleSubmission = () => {
+		const formData = new FormData();
+		formData.append('File', selectedFile);
+        console.log(formData)
+		fetch(
+			`http://localhost:3001/jobfinder/application/${Id}/${cookies.user}`,
+			{
+				method: 'POST',
+                headers: {
+                    // 'Content-Type': 'application/json',
+                    // 'Content-Type': 'multipart/form-data',
+                    'Accept': 'application/json'
+                    },
+				body: formData,
+			}
+		)
+			.then((response) => response.json())
+			.then((result) => {
+				if(result){
+                    alert('Nộp CV thành công')
+                }
+                else {alert('Nộp thất bại hoặc đã nộp');
+                }
+			})
+			.catch((error) => {
+				console.error('Error:', error);
+			});
+	};
     useEffect(()=> {
         fetch(`http://localhost:3001/jobfinder/postdetail/${Id}`)
         .then(res =>res.json())
@@ -22,12 +55,15 @@ const Recuitment = () => {
             setLuong(data[0].Salary)
             setJob(data[0].Job)
             setAddress(data[0].Address)
-            setBenefits(data[0].benefits)
+            setBenefits(data[0].Benefits)
             setRequire(data[0].JobRequire)
             setNumber(data[0].Number)
             setExp(data[0].Experience)
-            setDateTerm(data[0].DateTerm)
+            setDateTerm(data[0].DateTerm.split("T")[0])
             setCompany(data[0].Company)
+            setCompanyId(data[0].CompanyId)
+            setContact(data[0].Contact)
+            setImage(data[0].Image)
         })
         console.log(Id)
     },[])
@@ -37,7 +73,12 @@ const Recuitment = () => {
                 <div style={{background:"gainsboro", padding:"20px",borderRadius:"7px"}}>
                     <div style={{display: "flex", justifyContent: "space-between"}}>
                         <div className="text" style={{fontWeight:"500",fontSize:"35px"}}>{job}</div>
-                        <div><button style={{padding:"5px",borderRadius:"7px"}}>Nộp cv</button></div>
+                        <div>
+                        <label style={{padding:"5px",borderRadius:"7px",background: "aliceblue"}} For="fileinput">Chọn cv</label>
+                        <input style={{display:"none"}} id="fileinput" type="file" name="file"accept=".pdf" onChange={(e)=>{setSelectedFile(e.target.files[0])}}/>
+                        <button onClick={handleSubmission}>Nộp</button>
+                        </div>
+                        
                     </div>
                     <div><h3>Giới thiệu công việc</h3></div>
                     <div className="gridContainerRecuit">
@@ -59,24 +100,23 @@ const Recuitment = () => {
                     
                     <div style={{background:"black",height:"1px",width:"90%",left:"5%",position:"relative"}}></div>
                     <div style={{display: "flex", justifyContent: "space-between"}}>
-                    <div>Hạn nộp hồ sơ: {dateterm.split("T")[0]}</div>
+                    <div>Hạn nộp hồ sơ: {dateterm}</div>
                         <div style={{paddingLeft:"50px"}}>Khu vực: {address}</div>
                     </div>
                 </div>
                 <div style={{background:"gainsboro",marginTop:"20px",borderRadius:"10px"}}><h2> Mô tả/Yêu cầu công việc </h2>
-                    <div>{require?require:'Không có yêu cầu thêm'}</div>
-                    <div>{benefits?'Quyền lợi:'+benefits:""}</div>
+                    <div>{require?'Yêu cầu: '+require:'Không có yêu cầu thêm'}</div>
+                    <div>{benefits?'Quyền lợi: '+benefits:""}</div>
                 </div>
             </div>
             <div style={{margin:"0px 20px",background:"gainsboro",height:"45%", width:"175px",borderRadius:"10px",padding:"10px"}}>
                 <div style={{display: "flex", justifyContent: "flex-start"}}>
-                    <div style={{width:"40px",height:"40px",padding:"5px"}}><img className="icon-fit"src={process.env.PUBLIC_URL+"/company.jpeg"} alt="" /></div>
+                    <div style={{width:"40px",height:"40px",padding:"5px"}}><img className="icon-fit"src={image?+process.env.PUBLIC_URLimage:process.env.PUBLIC_URL+"/company.jpeg"} alt="" /></div>
                     <div>{company}</div>
                 </div>
                 <div>
-                    <div>Điện thoại</div>
-                    <div>Địa chỉ</div>
-                    <div><Link to="">Xem chi tiết</Link></div>
+                    <div>Liên hệ: {companyContact?companyContact:'Chưa có thông tin liên hệ'}</div>
+                    <div><Link to={`/CompanyDetail/${companyId}`}>Xem chi tiết</Link></div>
                 </div>
             </div>
             

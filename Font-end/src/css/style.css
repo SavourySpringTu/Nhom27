@@ -197,3 +197,22 @@ table tr td div input{
     text-align: left;
     text-overflow: ellipsis;
 }
+.longaddress {
+    overflow: hidden;
+    height: 25px;
+    width: 150px;
+    text-align: left;
+    text-overflow: ellipsis;
+}
+.listjob {
+    margin: 10px;
+    width: 80%;
+    background: whitesmoke;
+    left: 7%;
+    position: relative;
+    padding: 10px;
+    line-height: 15px;
+    border: #ff6a6a 5px;
+    border-radius: 10px;
+    border-style: outset;
+}

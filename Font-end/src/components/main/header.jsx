@@ -3,6 +3,7 @@ import "../../css/style.css"
 import { useCookies } from "react-cookie";
 const Header = () => {
     const [cookies, setCookie] = useCookies(["user"]);
+    const [role, setRole] = useCookies(["role"]);
     return(
         <div className='topbar'>
             <div className="Leftside" style={{padding:"15px"}}>
@@ -14,7 +15,12 @@ const Header = () => {
                 {cookies.user ?(
                     <div>
                     <button className="topbarelement topbarbtn">
-                    <Link to="/User" className="loglink">Cá nhân</Link>    
+                    {cookies.role !=3 ?(
+                        <Link to="/User" className="loglink">Cá nhân</Link>
+                    ):(
+                        <Link to="/MyCompany" className="loglink">Cá nhân</Link>
+                    )}
+                     
                     </button>
                     <button className="topbarelement topbarbtn">
                     <Link to="/Login" className="loglink">Đăng xuất</Link>
