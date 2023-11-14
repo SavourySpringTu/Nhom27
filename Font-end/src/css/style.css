@@ -4,7 +4,7 @@ body {
 .bg{
     width: 100%;
     height: inherit;
-    position: absolute;
+    position: fixed;
     object-fit: cover;
     margin: auto;
     margin-left: -50%;

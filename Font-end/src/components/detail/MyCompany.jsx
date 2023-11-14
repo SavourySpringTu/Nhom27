@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import { callError, callSuccess } from "../errorLibrary/call.mjs";
+import { baoloi } from "../errorLibrary/allError.mjs";
 const MyCompany = () => {
     // const {Id} = useParams();
     const navigate = useNavigate();
@@ -13,14 +16,33 @@ const MyCompany = () => {
     const [require, setRequire] = useState(null);
     const [benefit, setBenefit] = useState(null);
     const [address, setAddress] = useState(null);
-    const [number, setNumber] = useState(null);
+    const [number, setNumber] = useState(0);
     const [exp, setExp] = useState(null);
     const [date, setDate] = useState(null);
+    const [showEdit, setEdit] = useState('');
+    const [intro, setIntro] = useState(null);
+    const [lienlac, setLienLac] = useState(null);
+    const [truso, setTruSo] = useState(null);
     const onSubmit = async (e) => {
         e.preventDefault();
+        const datee = new Date();
+
+        let currentDay= String(datee.getDate()).padStart(2, '0');
+
+        let currentMonth = String(datee.getMonth()+1).padStart(2,"0");
+
+        let currentYear = datee.getFullYear();
+        let today = currentYear+"-"+currentMonth+"-"+currentDay;
+        if(date <= today) callError(baoloi.postErrTime)
+        else if (salarya.trim().length == 0) callError(baoloi.postMinSalary)
+        else if (salaryb.trim().length == 0) callError(baoloi.postMaxSalary)
+        else if (salarya > salaryb) callError(baoloi.postMinMaxSalary)
+        else if (address.trim().length == 0)  callError(baoloi.postAddress)
+        else if (number <= 0)  callError(baoloi.postAddress)
+        else{
         var dataa = {Job: job,Address: address,JobRequire: require,Number:number, Benefit: benefit, Exp: exp, Date: date,Salary: salarya+"-"+salaryb}
-        let result = await fetch(
-            `http://localhost:3001/company/newPost/${cookies.user}`,
+        let result = await 
+        fetch(`http://localhost:3001/company/newPost/${cookies.user}`,
             {
               method: 'POST',
               headers: {
@@ -33,12 +55,36 @@ const MyCompany = () => {
         .then(data => {
             console.log(data)
             if(data){
-                alert('Tạo bài tuyển dụng thành công')
+                callSuccess(baoloi.postSuccess)
                 showAdd();
             }
-            else {alert('Lưu thất bại');
+            else {callError(baoloi.postFail)
             }})
+        }   
     }
+    const onSubmitInfo = async (e) => {
+        e.preventDefault();
+        var dataa = {GioiThieu: intro,TruSo: truso,LienLac: lienlac}
+        let result = await 
+        fetch(`http://localhost:3001/company/changeCompanyInfo/${cookies.user}`,
+            {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+                },
+              body: JSON.stringify(dataa),
+            },
+        ).then(res =>res.json())
+        .then(data => {
+            if(data){
+                alert('Cập nhật mật khẩu thành công')
+                navigate("/MyCompany");
+            }
+            else {alert('Lưu thất bại');
+        }})
+    }
+    
     const showAdd = () => {
         setshowAddNew(!showAddNew) ;
     }
@@ -77,7 +123,7 @@ const MyCompany = () => {
                             <td><div><input type="text" value={job} onChange={(e) =>setJob(e.target.value)}/></div></td>
                         </tr>
                         <tr>
-                            <td><div>Lương</div></td>
+                            <td><div>Lương*</div></td>
                             <td><div><input style={{width: "200px"}} type="number" value={salarya} onChange={(e) =>setSalarya(e.target.value)}/>
                             -<input style={{width: "200px",margin:"0px 10px"}} type="number" value={salaryb} onChange={(e) =>setSalaryb(e.target.value)}/> tr   
                             </div></td>
@@ -87,7 +133,7 @@ const MyCompany = () => {
                             <td><div><input type="text" value={exp} onChange={(e) =>setExp(e.target.value)}/></div></td>
                         </tr>
                         <tr>
-                            <td><div>Số lượng</div></td>
+                            <td><div>Số lượng*</div></td>
                             <td><div><input type="number" value={number} onChange={(e) =>setNumber(e.target.value)}/></div></td>
                         </tr>
                         <tr>
@@ -99,11 +145,11 @@ const MyCompany = () => {
                             <td><div><input type="text" value={benefit} onChange={(e) =>setBenefit(e.target.value)}/></div></td>
                         </tr>
                         <tr>
-                            <td><div>Địa chỉ</div></td>
+                            <td><div>Địa chỉ*</div></td>
                             <td><div><input type="text" value={address} onChange={(e) =>setAddress(e.target.value)}/></div></td>
                         </tr>
                         <tr>
-                            <td><div>Hạn</div></td>
+                            <td><div>Hạn*</div></td>
                             <td><div><input type="date" value={date} onChange={(e) =>setDate(e.target.value)}/></div></td>
                         </tr>
                     </table>
@@ -120,6 +166,31 @@ const MyCompany = () => {
             </>):
             <div></div>
             }
+            {showEdit== '' ? ( <>
+                <div>
+                </div>   
+            </>):
+                <div style={{position: 'fixed',padding: '20px',marginLeft: '10%',top: '25%',background:'#ff6a6a',width:'40%',borderRadius:'20px'}}>
+                <form action="/" onSubmit={onSubmitInfo}>
+                <table>
+                        <tr>
+                            <td><div>Giới thiệu</div></td>
+                            <td><div><input type="text" value={intro} onChange={(e) =>setIntro(e.target.value)}/></div></td>
+                        </tr>
+                        <tr>
+                            <td><div>Liên lạc</div></td>
+                            <td><div><input type="number" value={lienlac} onChange={(e) =>setLienLac(e.target.value)}/></div></td>
+                        </tr>
+                        <tr>
+                            <td><div>Trụ sở</div></td>
+                            <td><div><input type="text" value={truso} onChange={(e) =>setTruSo(e.target.value)}/></div></td>
+                        </tr>
+                </table>
+                <button type="submit">Xác nhận</button>
+                <button onClick={()=>setEdit('')}>Thoát</button>
+                </form>
+                </div>
+            }
             <div>
             {data[0].map(dataa => (
                 <div style={{background:"gainsboro", padding:"20px",borderRadius:"7px"}}>
@@ -134,7 +205,7 @@ const MyCompany = () => {
                         <div style={{display:'flex'}}><h3 className="text">Liên lạc: {dataa.Contact?dataa.Contact:"Chưa có liên lạc"}</h3></div>
                         <br />
                         <div style={{display:'flex'}}><h3 className="text">Trụ sở: {dataa.Address?dataa.Address:"Chưa có địa chỉ"}</h3></div>
-                        <div style={{width:"350%"}}><button style={{float:"right"}}>Cập nhật thông tin</button></div>
+                        <div style={{width:"350%"}}><button style={{float:"right"}} onClick={()=>setEdit('done')}>Cập nhật thông tin</button></div>
                     </div>
                 </div>
             ))}

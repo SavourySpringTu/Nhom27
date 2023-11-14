@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { callError } from "../errorLibrary/call.mjs";
+import { baoloi } from "../errorLibrary/allError.mjs";
 
 const Self = () => {
     const [ten, setTen] = useState(null);
@@ -20,8 +23,13 @@ const Self = () => {
 		const formData = new FormData();
 		formData.append('File', selectedFile);
         console.log(formData)
-		fetch(
-			`http://localhost:3001/jobfinder/upload/${cookies.user}`,
+        if(selectedFile.size >= (1024**20)){
+            callError(baoloi.selfImageLimit)
+        }else if(selectedFile.type.indexOf('image')==-1){
+            callError(baoloi.selfImageFile)
+        }
+        else{
+		fetch(`http://localhost:3001/jobfinder/upload/${cookies.user}`,
 			{
 				method: 'POST',
                 headers: {
@@ -40,6 +48,7 @@ const Self = () => {
 			.catch((error) => {
 				console.error('Error:', error);
 			});
+        }
 	};
     
     useEffect(()=> {
@@ -70,11 +79,29 @@ const Self = () => {
         })
         
     },[]) 
+
+    function checkinput (){
+        // if (ten.trim().length == 0)
+        // toast.error('Bạn chưa nhập tên',{
+        //     position: toast.POSITION.TOP_RIGHT
+        // }); 
+        // else if (taikhoan.trim().length == 0) 
+        // toast.error('Bạn chưa nhập tài khoản',{
+        //     position: toast.POSITION.TOP_RIGHT
+        // }); 
+        // else return true
+        // return false
+    }
     const onSubmit = async (e) => {
         e.preventDefault();
         var dataa = {Username: ten,Address: address,Email: email, Description:description, Level: level,Bio:bio,Age:age,Gender:gender}
-        let result = await fetch(
-            `http://localhost:3001/jobfinder/saveinfo/${cookies.user}`,
+        if(email.trim().length == 0)
+        callError(baoloi.selfEmail)
+        else if(age<=5){
+        callError(baoloi.selfAge)
+        } else {
+        let result = await 
+        fetch(`http://localhost:3001/jobfinder/saveinfo/${cookies.user}`,
             {
               method: 'PUT',
               headers: {
@@ -90,7 +117,7 @@ const Self = () => {
                 navigate("/User");
             }
             else {alert('Lưu thất bại');
-            }})
+            }})}
     }
     return(
         <div style={{position:"relative", display: "grid", justifyContent: "normal"}}>
@@ -116,7 +143,7 @@ const Self = () => {
                         </tr>
                         <tr>
                             <td><div>Email</div></td>
-                            <td><div><input type="text" value={email} onChange={(e) =>setEmail(e.target.value)}/></div></td>
+                            <td><div><input type="email" value={email} onChange={(e) =>setEmail(e.target.value)}/></div></td>
                         </tr>
                         <tr>
                             <td><div>Mô tả bản thân</div></td>

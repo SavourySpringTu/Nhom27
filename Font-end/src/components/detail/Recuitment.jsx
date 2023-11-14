@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react"
 import { useCookies } from "react-cookie";
 import { Link, useLocation, useParams } from "react-router-dom"
-
+import { toast } from "react-toastify";
+import {callError, callSuccess, fileLimit} from "../errorLibrary/call.mjs";
+import { baoloi } from "../errorLibrary/allError.mjs";
 const Recuitment = () => {
     const {Id} = useParams();
     const [luong, setLuong] = useState(null);
@@ -20,10 +22,16 @@ const Recuitment = () => {
     const [cookies, setCookie, removeCookie] = useCookies(["user"]);
     const handleSubmission = () => {
 		const formData = new FormData();
+        console.log(selectedFile) 
 		formData.append('File', selectedFile);
-        console.log(formData)
-		fetch(
-			`http://localhost:3001/jobfinder/application/${Id}/${cookies.user}`,
+        if(!cookies.user){
+            callError(baoloi.needlogin)
+        }else
+        if(!selectedFile){
+            callError(baoloi.filenotselect)
+        } else
+        if(fileLimit(selectedFile,30)){
+		fetch(`http://localhost:3001/jobfinder/application/${Id}/${cookies.user}`,
 			{
 				method: 'POST',
                 headers: {
@@ -37,14 +45,15 @@ const Recuitment = () => {
 			.then((response) => response.json())
 			.then((result) => {
 				if(result){
-                    alert('Nộp CV thành công')
+                    callSuccess(baoloi.cvSuccess);
                 }
-                else {alert('Nộp thất bại hoặc đã nộp');
+                else {callError(baoloi.cvFail);
                 }
 			})
 			.catch((error) => {
 				console.error('Error:', error);
 			});
+        }
 	};
     useEffect(()=> {
         fetch(`http://localhost:3001/jobfinder/postdetail/${Id}`)
@@ -76,7 +85,7 @@ const Recuitment = () => {
                         <div>
                         <label style={{padding:"5px",borderRadius:"7px",background: "aliceblue"}} For="fileinput">Chọn cv</label>
                         <input style={{display:"none"}} id="fileinput" type="file" name="file"accept=".pdf" onChange={(e)=>{setSelectedFile(e.target.files[0])}}/>
-                        <button onClick={handleSubmission}>Nộp</button>
+                        <button onClick={handleSubmission} style={{margin: "0px 10px"}}>Nộp</button>
                         </div>
                         
                     </div>

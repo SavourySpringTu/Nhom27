@@ -3,6 +3,8 @@ import "../../css/style.css"
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { toast } from 'react-toastify';
+import { callError, callSuccess } from "../errorLibrary/call.mjs";
+import { baoloi } from "../errorLibrary/allError.mjs";
 
 const Login = () => {
     const [data, setData] = useState(null);
@@ -19,10 +21,14 @@ const Login = () => {
     },[])
     async function checkinput (){
         if (taikhoan.trim().length == 0) 
-        alert("Ban chua nhap tai khoan")
+        toast.success('Bạn chưa nhập tài khoản', {
+            position: toast.POSITION.TOP_RIGHT
+        });
         
         else if (matkhau.trim().length == 0) 
-        alert("Ban chua nhap mat khau")
+        toast.success('Bạn chưa nhập mật khẩu', {
+            position: toast.POSITION.TOP_RIGHT
+        });
         
         else return true
         return false
@@ -32,8 +38,8 @@ const Login = () => {
         if(checkinput()){
         var dataa = {Username: taikhoan,Password: matkhau}
         //console.log(JSON.stringify(dataa));
-        let result = await fetch(
-            'http://localhost:3001/jobfinder/login',
+        let result = await 
+        fetch('http://localhost:3001/jobfinder/login',
             {
               method: 'POST',
               headers: {
@@ -45,9 +51,10 @@ const Login = () => {
         ).then(res =>res.json())
         .then(data => {
             if(data.result[0]){
-                toast.success('Success Notification !', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
+                // toast.success('Đăng nhập thành công !', {
+                //     position: toast.POSITION.TOP_RIGHT
+                // });
+                callSuccess(baoloi.successLogin)
                 setCookie("user", data.result[1], { path: "/" });
                 console.log(data.result[2])
                 setRole("role",data.result[2])
@@ -56,9 +63,7 @@ const Login = () => {
                 else
                 navigate("/");
             }
-            else {toast.error('Đăng nhập thất bại, tài khoản hoặc mật khẩu nhập sai',{
-                position: toast.POSITION.TOP_RIGHT
-            }); 
+            else {callError(baoloi.logCheck)
             removeCookie('user')
         }
         })
@@ -75,9 +80,9 @@ const Login = () => {
                     <input className="inputlog" type="text" value={taikhoan} onChange={(e) =>setTaiKhoan(e.target.value)}/><br/>
                     <input className="inputlog" type="password" value={matkhau} onChange={(e) =>setMatKhau(e.target.value)}/><br/>
                     <Link 
-                        to="#" 
+                        to="/ForgotPass" 
                         style={{right:"30px"}} className="loglink"
-                        >Quên mk
+                        >Quên mật khẩu
                     </Link>
                     <Link
                         to="/Register" 

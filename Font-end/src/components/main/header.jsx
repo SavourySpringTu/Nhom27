@@ -1,9 +1,17 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../../css/style.css"
 import { useCookies } from "react-cookie";
+import { useEffect } from "react";
 const Header = () => {
-    const [cookies, setCookie] = useCookies(["user"]);
-    const [role, setRole] = useCookies(["role"]);
+    const [cookies, setCookie, removeCookie] = useCookies(["user"]);
+    const [role, setRole, removeCookieRole] = useCookies(["role"]);
+    const navigate = useNavigate();
+    useEffect(()=>{
+        if(cookies.role == 1){
+        removeCookie('user')
+        removeCookieRole('role')
+        }
+    },[])
     return(
         <div className='topbar'>
             <div className="Leftside" style={{padding:"15px"}}>

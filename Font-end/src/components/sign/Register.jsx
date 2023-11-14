@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { callError, callSuccess } from "../errorLibrary/call.mjs";
+import { baoloi } from "../errorLibrary/allError.mjs";
 
 const Register = () => {
     const [role, setRole] = useState('');
@@ -11,29 +14,36 @@ const Register = () => {
     const navigate = useNavigate();
     async function checkinput (){
         if (ten.trim().length == 0)
-        alert("Ban chua nhap ten")
+        callError(baoloi.regName);
         else if (taikhoan.trim().length == 0) 
-        alert("Ban chua nhap tai khoan")
+        callError(baoloi.regLogName)
         else if (email.trim().length == 0) 
-        alert("Ban chua nhap email")
+        callError(baoloi.regEmail)
         else if (role.trim().length == 0) 
-        alert("Ban chua chon vai tro")
+        callError(baoloi.regRole)
         else if (matkhau.trim().length == 0) 
-        alert("Ban chua nhap mat khau")
+        callError(baoloi.regPass)
         else if (repass.trim().length == 0) 
-        alert("Ban chua nhap lai mat khau")
+        callError(baoloi.regRePass)
         else if (repass !== matkhau) 
-        alert("Mật khẩu nhập lại không trùng với mật khẩu")
+        callError(baoloi.regWrongRepass)
+        
         else return true
+        return false
     }
     const onSubmit = async (e) => {
         e.preventDefault();
         let ha = checkinput();
-        if(ha){
+        if(ha==false)
+        {
+
+        }
+        else
+        {
             var dataa = {Username: taikhoan,Password: matkhau,Name: ten, Role:role, Email: email}
             console.log(role);
-        let result = await fetch(
-            'http://localhost:3001/jobfinder/register',
+        let result = await 
+        fetch('http://localhost:3001/jobfinder/register',
             {
               method: 'POST',
               headers: {
@@ -45,10 +55,10 @@ const Register = () => {
         ).then(res =>res.json())
         .then(data => {
             if(data.result){
-                alert('tạo tài khoản thành công, di chuyển đến trang đăng nhập')
-                navigate("/login");
+                callSuccess(baoloi.registerSuccess)
+                navigate("/Login");
             }
-            else {alert('Đăng ký thất bại');
+            else {callError(baoloi.registerFail)
         }
         })
         }

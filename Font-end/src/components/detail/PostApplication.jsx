@@ -49,8 +49,7 @@ const PostApplication = () => {
         console.log(IdApply)
         if(showCv != key){
         setshowCV(key);
-        fetch(
-			`http://localhost:3001/jobfinder/application/check/${IdApply}`,{
+        fetch(`http://localhost:3001/jobfinder/application/check/${IdApply}`,{
 				method: 'PUT',
                 headers: {
                     'Accept': 'application/json'
