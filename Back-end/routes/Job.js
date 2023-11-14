@@ -4,6 +4,5 @@ const route = express.Router();
 
 route.get('/listjob',JobController.listJob);
 route.get('/listjoba',JobController.listJobA);
-route.get('/getjob/:Id',JobController.getJob);
-
+route.get('/job',JobController.getJob);
 module.exports = route;

@@ -4,6 +4,8 @@ const account = require('./Account');
 const application = require('./Application');
 const post = require('./Post');
 const home = require('./Home');
+const company = require('./Company');
+const admin = require('./Admin')
 const cors = require('cors');
 app.use(cors({
     origin: "*",
@@ -13,6 +15,8 @@ function route(app){
     app.use('/',home);
     app.use('/test',test);
     app.use('/jobfinder',account,application,job,post);
+    app.use('/company',company);
+    app.use('/admin',admin)
 }
 
 module.exports= route;

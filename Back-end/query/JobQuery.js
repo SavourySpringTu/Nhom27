@@ -15,12 +15,17 @@ async function getListJob(){
         return false;
     }
 }
-async function getJobbyId(id){
+async function getJob(){
     try{
+        var dateObj = new Date();
+        var month = ('0' + (dateObj.getMonth() + 1)).slice(-2);
+        var date = ('0' + dateObj.getDate()).slice(-2);
+        var year = dateObj.getFullYear();
+        var shortDate = year + '-' + month + '-' + date;
         let pool = await sql.connect(config);
         let qr =  await pool.request()
-        .input('id',sql.Int,id)
-        .query('select * from job where Id= @id');
+        .input('date',sql.NVarChar(10),shortDate)
+        .query('select Name from Job j1 inner join Post  p1 on j1.Id = p1.Id_Job where p1.DateTerm=@date group by j1.Name, j1.Id ');
         return qr.recordset;
     }
     catch(error)
@@ -45,5 +50,5 @@ async function getListJobA(){
 module.exports = {
     getListJob:getListJob,
     getListJobA:getListJobA,
-    getJobbyId:getJobbyId
+    getJob:getJob
 }

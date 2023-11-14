@@ -8,9 +8,8 @@ class JobController{
         });
     }
     getJob(req,res){
-        let id = req.params.Id;
-        qr.getJobbyId(id).then(result=>{
-            res.status(200).send({result})
+        qr.getJob().then(result=>{
+            res.status(200).send(result)
         });
     }
     listJobA(req,res){

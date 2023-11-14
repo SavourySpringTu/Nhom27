@@ -16,9 +16,15 @@ async function searchPostbyJob(job){
 }
 async function getPost(){
     try{
+        var dateObj = new Date();
+        var month = ('0' + (dateObj.getMonth() + 1)).slice(-2);
+        var date = ('0' + dateObj.getDate()).slice(-2);
+        var year = dateObj.getFullYear();
+        var shortDate = year + '-' + month + '-' + date;
         let pool = await sql.connect(config);
         let qr =  await pool.request()
-        .query('SELECT Post.Id, Job.Name Job,Salary,Post.Address,Userr.Name Company FROM Post inner join Job on Post.Id_job=Job.Id inner join Userr on Userr.Id=(select Id_user from Company where Id=Post.Id_Company)');
+        .input('date',sql.NVarChar(10),shortDate)
+        .query('SELECT Post.Id, Job.Name Job,Salary,Post.Address,Userr.Name Company, Post.Status FROM Post inner join Job on Post.Id_job=Job.Id inner join Userr on Userr.Id=(select Id_user from Company where Id=Post.Id_Company) where DateTerm>=@date and Post.Status=0 and Userr.Status = 0');
         return qr.recordset;
     }
     catch(error)
@@ -31,7 +37,7 @@ async function postDetail(id){
         let pool = await sql.connect(config);
         let qr =  await pool.request()
         .input('id',sql.Int,id)
-        .query('SELECT Post.DateTerm ,Post.Experience, Post.JobRequire,Post.Number,Post.Benefits,Post.Id,Job.Name Job,Salary,Post.Address,Userr.Name Company, Post.Status FROM Post inner join Job on Post.Id_job=Job.Id inner join Userr on Userr.Id=(select Id_user from Company where Id=Post.Id_Company and Post.Status=0) where Post.Id=@id');
+        .query('SELECT Company.Contact, Post.DateTerm ,Post.Experience, Post.JobRequire,Post.Number,Post.Benefits,Post.Id,Job.Name Job,Salary,Post.Address,Userr.Name Company,Company.Id CompanyId, Userr.Image Image, Post.Status FROM Post inner join Job on Post.Id_job=Job.Id inner join Userr on Userr.Id=(select Id_user from Company where Id=Post.Id_Company and Post.Status=0) inner join Company on Company.Id_user=Userr.Id where Post.Id=@id');
         return qr.recordset;
     }
     catch(error)

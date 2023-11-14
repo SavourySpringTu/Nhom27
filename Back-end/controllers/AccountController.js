@@ -81,5 +81,19 @@ class AccountController{
         var result= verifyJWT(token);
         res.status(200).send({result})
     }
+    sendMailForgetPassword(req,res){
+        let email = req.params.Id;
+        var x = Math.floor(Math.random() * 100000);
+        qr.sendMailForgetPassword(email,x).then(result=>{
+            res.status(200).send({x})
+        }); 
+    }
+    changePass(req,res){
+        let email = req.params.Id;
+        let pass = req.body.Password;
+        qr.changePass(email,pass).then(result=>{
+            res.status(200).send(result)
+        }); 
+    }
 }
 module.exports= new AccountController;

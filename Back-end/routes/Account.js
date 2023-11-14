@@ -10,4 +10,6 @@ route.post('/register',AccountController.register);
 route.post('/upload/:Id',AccountController.upload);
 route.get('/accountdetail/:Id',AccountController.accountDetail);
 route.put('/saveinfo/:Id',AccountController.saveInfo);
+route.get('/forgotpassword/:Id',AccountController.sendMailForgetPassword);
+route.put('/changepass/:Id',AccountController.changePass);
 module.exports = route;
